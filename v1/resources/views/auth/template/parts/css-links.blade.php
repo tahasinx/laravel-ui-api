@@ -1,0 +1,24 @@
+<link rel="icon" type="image/png" href="{{ asset('app/root/logo/icon-blue.png') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('auth') }}/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="{{ asset('auth') }}/css/fontawesome-all.min.css">
+<link rel="stylesheet" type="text/css" href="{{ asset('auth') }}/css/core.css">
+<link rel="stylesheet" type="text/css" href="{{ asset('auth') }}/css/form.css">
+<link rel="stylesheet" type="text/css" href="{{ asset('auth') }}/css/clock.css">
+<link rel="stylesheet" type="text/css" href="{{ asset('auth/css/style.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('app/root/css/style.css') }}">
+<link rel="stylesheet" href="{{ asset('app/backend/css/vendor/select2.min.css') }}">
+<link rel="stylesheet" href="{{ asset('app/backend/css/vendor/select2-bootstrap4.min.css') }}">
+<link rel="stylesheet" href="{{ asset('app/backend/css/vendor/bootstrap-datepicker3.standalone.min.css') }}">
+
+{{-- <script>
+    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const isDarkMode = darkModeMediaQuery.matches;
+
+    const faviconx = document.querySelector('link[rel="icon"]');
+
+    if (isDarkMode) {
+        faviconx.href = '{{ asset('app/root/logo/icon-white.png') }}';
+    } else {
+        faviconx.href = '{{ asset('app/root/logo/icon-dark.png') }}';
+    }
+</script> --}}
