@@ -23,7 +23,19 @@ $version =  $_GET['version'] ?? 'v1';
 $baseDir = __DIR__ . '/' . $version;
 $virtualBasePath = ''; // Start with no prefix since we want paths like "auth/css/style.css"
 
-// Scan all files under /v1 recursively
+// Check if version directory exists
+if (!is_dir($baseDir)) {
+    echo json_encode([
+        'status'    => 'error',
+        'message'   => "Version directory '$version' not found",
+        'requested_version' => $version,
+        'available_versions' => getAvailableVersions(),
+        'timestamp' => date('Y-m-d H:i:s')
+    ], JSON_PRETTY_PRINT);
+    exit();
+}
+
+// Scan all files under the version directory recursively
 $files = scanDirectory($baseDir, $virtualBasePath);
 
 // Return JSON
@@ -85,6 +97,23 @@ function countFlatFiles($files)
         }
     }
     return $count;
+}
+
+/**
+ * Get available version directories
+ */
+function getAvailableVersions()
+{
+    $versions = [];
+    $items = scandir(__DIR__);
+
+    foreach ($items as $item) {
+        if ($item !== '.' && $item !== '..' && is_dir(__DIR__ . '/' . $item)) {
+            $versions[] = $item;
+        }
+    }
+
+    return $versions;
 }
 
 /**
