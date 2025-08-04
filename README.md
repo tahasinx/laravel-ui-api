@@ -139,7 +139,7 @@ The API supports multiple application versions:
 
 ```
 project/
-├── index.php          # Main API endpoint
+├── index.php         # Main API endpoint
 ├── .htaccess         # URL rewriting
 ├── v1/               # Version 1 complete application
 │   ├── app/
