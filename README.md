@@ -138,7 +138,7 @@ The API supports multiple application versions:
 ## Complete Application Structure
 
 ```
-project_uiapi/
+project/
 ├── index.php          # Main API endpoint
 ├── .htaccess         # URL rewriting
 ├── v1/               # Version 1 complete application
