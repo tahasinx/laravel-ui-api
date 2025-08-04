@@ -37,7 +37,7 @@ body {
 }
 
 .website-logo .logo {
-    background-image: url("../../app/root/logo/logo-white.png");
+    background-image: url("../../auth/img/logo.svg");
 }
 
 .website-logo .logo img {
