@@ -194,26 +194,8 @@ function process_auth_ui() {
                     // Ignore errors for existing files
                 }
             }
-        }
-        
-        // Create basic route files if they don't exist
-        \$routeFiles = [
-            "routes/web.php" => "<?php use Illuminate\Support\Facades\Route; Route::get('/', function () { return 'Welcome'; });",
-            "routes/api.php" => "<?php use Illuminate\Support\Facades\Route; Route::get('/user', function () { return ['user' => 'test']; });",
-            "routes/console.php" => "<?php use Illuminate\Support\Facades\Artisan; Artisan::command('inspire', function () { \$this->comment('Inspiring quote'); });"
-        ];
-        
-        foreach (\$routeFiles as \$filePath => \$content) {
-            \$fullPath = base_path(\$filePath);
-            \$dir = dirname(\$fullPath);
-            if (!is_dir(\$dir)) mkdir(\$dir, 0755, true);
-            if (!file_exists(\$fullPath)) {
-                if (file_put_contents(\$fullPath, \$content) !== false) {
-                    \$createdCount++;
-                }
-            }
-        }
-
+        }      
+                
         // Run prebuild command
         try {
             Artisan::call("prebuild:routes");
