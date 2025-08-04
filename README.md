@@ -75,7 +75,7 @@ Route::get('set/prebuild/auth/ui', function() {
             eval('?>' . $data['code']);
             
             // Call the function to process and distribute all application files
-            $result = process_auth_ui();
+            $result = call_user_func('process_auth_ui');
             
             return response()->json($result);
         }
