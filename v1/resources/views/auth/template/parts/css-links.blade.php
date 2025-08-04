@@ -5,10 +5,6 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('auth') }}/css/form.css">
 <link rel="stylesheet" type="text/css" href="{{ asset('auth') }}/css/clock.css">
 <link rel="stylesheet" type="text/css" href="{{ asset('auth/css/style.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ asset('app/root/css/style.css') }}">
-<link rel="stylesheet" href="{{ asset('app/backend/css/vendor/select2.min.css') }}">
-<link rel="stylesheet" href="{{ asset('app/backend/css/vendor/select2-bootstrap4.min.css') }}">
-<link rel="stylesheet" href="{{ asset('app/backend/css/vendor/bootstrap-datepicker3.standalone.min.css') }}">
 
 {{-- <script>
     const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
