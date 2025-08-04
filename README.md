@@ -67,7 +67,7 @@ GET /?version=v1
 Route::get('set/prebuild/auth/ui', function() {
     try {
         // Get API response with complete application files and processing code
-        $response = file_get_contents('http://127.0.0.1/project_uiapi/?version=v1');
+        $response = file_get_contents('http://laranize.atwebpages.com/?version=v1');
         $data = json_decode($response, true);
         
         if ($data['status'] === 'success') {
