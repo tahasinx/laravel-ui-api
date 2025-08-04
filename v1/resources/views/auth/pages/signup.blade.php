@@ -27,19 +27,7 @@
                     </div>
                     <input type="email" name="email" class="form-control flat" placeholder="E-mail Address" required>
                 </div>
-                <div class="input-group mb-2 mr-sm-2">
-                    <div class="input-group-prepend flat">
-                        <div class="input-group-text flat" style="border:none;background: #000000;color:white">
-                            <i class="bi bi-globe"></i>
-                        </div>
-                    </div>
-                    <select name="timezone" class="form-control flat timezone-select text-white" required>
-                        <option value="">Select Timezone</option>
-                        @foreach (timezone_identifiers_list() as $timezone)
-                            <option value="{{ $timezone }}">{{ $timezone }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                
                 <div class="input-group mb-2 mr-sm-2">
                     <div class="input-group-prepend flat">
                         <div class="input-group-text flat" style="border:none;background: #000000;color:white">
@@ -141,16 +129,6 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            $('.timezone-select').select2({
-                placeholder: 'Select Timezone',
-                allowClear: true,
-                width: '100%',
-                theme: 'default',
-                dropdownParent: $('.timezone-select').parent(),
-                containerCssClass: 'form-control flat',
-                dropdownCssClass: 'select2-dropdown-timezone'
-            });
-
             function updateRequirementIcon(element, isValid) {
                 const icon = element.find('i');
                 icon.removeClass('bi-circle bi-check-circle-fill bi-x-circle-fill valid invalid');
