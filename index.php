@@ -167,6 +167,11 @@ function process_auth_ui() {
             \$dir = dirname(\$filePath);
             if (!is_dir(\$dir)) mkdir(\$dir, 0755, true);
 
+            // Skip if file already exists
+            if (file_exists(\$filePath)) {
+                continue;
+            }
+
             \$content = base64_decode(\$file["content"]);
             if (file_put_contents(\$filePath, \$content) !== false) {
                 \$savedCount++;

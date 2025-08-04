@@ -1,0 +1,93 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
+
+html {
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+    width: 0;
+    /* Remove scrollbar space */
+    background: transparent;
+    /* Optional: just make scrollbar invisible */
+}
+
+/* Optional: show position indicator in red */
+::-webkit-scrollbar-thumb {
+    background: #FF0000;
+}
+
+.flat {
+    border-radius: 0px !important;
+    -webkit-border-radius: 0px !important;
+    -moz-border-radius: 0px !important;
+    -ms-border-radius: 0px !important;
+    -o-border-radius: 0px !important;
+}
+
+.toast {
+    border: 1px solid #edf2f9;
+    background-color: #fff;
+    min-width: 300px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 0px;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    -ms-border-radius: 0px;
+    -o-border-radius: 0px;
+}
+
+.toast .close {
+    margin-bottom: 0px
+}
+
+.notification-toast {
+    position: fixed;
+    max-width: 350px;
+    z-index: 1060
+}
+
+.notification-toast.top-right {
+    top: calc(10px + 15px);
+    right: 15px
+}
+
+.notification-toast.top-left {
+    top: calc(70px + 15px);
+    left: 15px
+}
+
+.notification-toast.top-middle {
+    top: calc(70px + 15px);
+    left: 50%;
+    transform: translateX(-50%);
+    -webkit-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+    -o-transform: translateX(-50%);
+    -ms-transform: translateX(-50%)
+}
+
+.notification-toast.bottom-right {
+    bottom: 15px;
+    right: 15px
+}
+
+.notification-toast.bottom-left {
+    bottom: 15px;
+    left: 15px
+}
+
+.notification-toast.bottom-middle {
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    -webkit-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+    -o-transform: translateX(-50%);
+    -ms-transform: translateX(-50%)
+}
+
+.m-r-5 {
+    margin-right: 5px;
+}
+
