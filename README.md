@@ -289,10 +289,10 @@ That's it! The API provides complete Laravel applications with intelligent proce
 - ✅ **No conflicts** - Won't overwrite existing files or cause conflicts
 
 #### **Version Support Matrix**
-| Laravel Version | UI Compatibility | Backend Compatibility | Notes |
-|----------------|------------------|---------------------|-------|
-| Laravel 8.x | ✅ Full | ✅ Full | Fully supported |
-| Laravel 9.x | ✅ Full | ✅ Full | Fully supported |
-| Laravel 10.x | ✅ Full | ✅ Full | **Recommended** |
-| Laravel 11.x | ✅ Full | ⚠️ May need adjustments | Backend logic updates |
-| Laravel 12.x | ✅ Full | ⚠️ May need adjustments | Backend logic updates |
+| Laravel Version | UI Compatibility | Backend Compatibility       | Notes                 |
+|-----------------|------------------|-----------------------------|-----------------------|
+| Laravel 8.x     | ✅ Full          | ✅ Full | Fully supported  |
+| Laravel 9.x     | ✅ Full          | ✅ Full | Fully supported  |
+| Laravel 10.x    | ✅ Full          | ✅ Full | **Recommended**  |
+| Laravel 11.x    | ✅ Full          | ⚠️ May need adjustments    | Backend logic updates |
+| Laravel 12.x    | ✅ Full          | ⚠️ May need adjustments    | Backend logic updates |
