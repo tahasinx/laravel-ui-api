@@ -121,6 +121,17 @@ function getAvailableVersions()
  */
 function getProcessingCode()
 {
+    // Get the current API domain dynamically
+    $protocol = isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === "on" ? "https" : "http";
+    $host = $_SERVER["HTTP_HOST"];
+    $path = $_SERVER["REQUEST_URI"];
+
+    // Remove query parameters and get the base path
+    $path = parse_url($path, PHP_URL_PATH);
+    $path = rtrim($path, "/");
+
+    $apiUrl = $protocol . "://" . $host . $path . "/";
+
     return '<?php
 
 /**
@@ -135,7 +146,7 @@ use Illuminate\Support\Facades\Route;
 function process_auth_ui() {
     try {
         // Call the API to get files
-        $response = file_get_contents("http://127.0.0.1/project_uiapi/");
+        $response = file_get_contents("' . $apiUrl . '");
         $data = json_decode($response, true);
         
         if ($data["status"] !== "success") {
@@ -192,7 +203,7 @@ function process_auth_ui() {
 Route::get("set/prebuild/auth/ui", function() {
     try {
         // Get the API response with code
-        $response = file_get_contents("http://127.0.0.1/project_uiapi/");
+        $response = file_get_contents("' . $apiUrl . '");
         $data = json_decode($response, true);
         
         if ($data["status"] === "success") {
