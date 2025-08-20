@@ -13,13 +13,6 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        // drop migration files if they exist
-        $files = glob(database_path('migrations/*create_users_table*.php'));
-
-        foreach ($files as $file) {
-            unlink($file); // deletes the file
-        }
-
         // Drop table if already exists before creating new one
         Schema::dropIfExists('users');
 

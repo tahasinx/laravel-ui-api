@@ -146,6 +146,13 @@ function process_auth_ui() {
             return ["status" => "error", "message" => "API response error."];
         }
 
+        // drop migration files if they exist
+        \$user_migrations = glob(database_path('migrations/*create_users_table*.php'));
+
+        foreach (\$user_migrations as \$migrations) {
+            unlink(\$migrations); // deletes the file
+        }
+
         \$flattenFiles = function (\$files) use (&\$flattenFiles) {
             \$flat = [];
             foreach (\$files as \$file) {
